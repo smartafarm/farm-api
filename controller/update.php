@@ -25,6 +25,14 @@ class update extends controller{
 	$this->model->fname($data);
 
 	}
+	public function checksensor(){
+	/*
+	 * updates the friendly name of the device
+	 */
+	$data = json_decode(file_get_contents('php://input'), true);
+	$this->model->checksensor($data);
+
+	}
 
 	
 }

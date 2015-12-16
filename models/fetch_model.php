@@ -42,6 +42,7 @@ class fetch_model extends Model{
 			$data["name"]	=  $device["EquipName"];
 			$data["Desc"]	=  $device["Description"];
 			$data["Status"]	=  $device["status"];
+			$data["sensor"]	=  $device["sensor"];			
 			foreach($alldAccess as $key=> $value)
 			{
 				if ($value['_id'][0] == $device["_id"])
