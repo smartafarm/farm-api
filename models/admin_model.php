@@ -65,7 +65,7 @@ class admin_model extends Model{
 	
 		$collection = $this->db->DeviceMaster;
 		// only controller devices sent
-		$readings = $collection->find(array('EquipTypeID' => 'c1'));
+		$readings = $collection->find(array('EquipTypeID' => 'c1'))->sort(array("_id" => 1));
 		
 		$result = array();	
 		
@@ -112,6 +112,7 @@ class admin_model extends Model{
 		//print_r($data['serverData']);
 		$username = $data['serverData']['uname'];		
 		$access = $data['serverData']['dAccess'];
+		
 		$response =$collection->update(
 		    array('uname' => $username),
 		    array(

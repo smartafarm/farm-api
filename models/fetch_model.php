@@ -20,13 +20,15 @@ class fetch_model extends Model{
 		//gets all devices accessible to the user	
 		foreach($dAccessResponse as $key=> $value)
 		{
-			$alldAccess = $value['device'];
+			
+				$alldAccess = $value['device'];
 
 		}	
 		//creating device and function array for response
 		foreach($alldAccess as $key=> $value)
 		{
-			array_push($dAccess, $value['_id'][0]);
+			
+			array_push($dAccess, $key);
 		}	
 		
 		$collection = $this->db->DeviceMaster;
@@ -45,7 +47,7 @@ class fetch_model extends Model{
 			$data["sensor"]	=  $device["sensor"];			
 			foreach($alldAccess as $key=> $value)
 			{
-				if ($value['_id'][0] == $device["_id"])
+				if ($key == $device["_id"])
 				{
 					$data["func"] = $value['func'];
 					
