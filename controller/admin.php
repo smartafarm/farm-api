@@ -21,6 +21,20 @@ class admin extends controller{
 		$this->model->createUser($data);
 
 		}
+	public function createOrg(){
+		/*
+		 * creating organisation admin
+		 */
+		$data = json_decode(file_get_contents('php://input'), true);
+		$this->model->createOrg($data);
+
+		}		
+	public function getorg(){
+		// gets all user for administration
+		
+		$this->model->getorg();
+		
+	}		
 	public function getUsers(){
 		// gets all user for administration
 		

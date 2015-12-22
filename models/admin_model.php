@@ -129,4 +129,39 @@ class admin_model extends Model{
 		echo json_encode( $response, JSON_PRETTY_PRINT);
 		
 	}
+
+	public function createOrg($data){
+		/*
+		Creating organisation
+		 */
+		$collection = $this->db->orgMaster;		
+		//setting default password
+		$response = $collection->insert($data['serverData']);
+		if($response['ok'] == 0){
+			//if no data is appended
+			http_response_code(202);
+		}		
+		header('Content-Type: application/json');
+		echo json_encode( $response, JSON_PRETTY_PRINT);
+	}
+
+	public function getorg() {
+
+	/*
+	 // responds to get request for all users
+	 */	
+	
+		$collection = $this->db->orgMaster;
+		$readings = $collection->find();
+		$result = Array();		
+		foreach ( $readings as $id => $value )
+		{
+			unset($value[_id]);
+			array_push($result, $value);			
+
+		}				
+	
+	header('Content-Type: application/json');
+	echo json_encode($result,JSON_PRETTY_PRINT);
+	}
 }
