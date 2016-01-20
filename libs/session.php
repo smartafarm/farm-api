@@ -28,12 +28,12 @@ class session {
         );
 		
 	}
-	public function setToken($key,$value){
+	public function setToken($key,$value,$role){
 		// sets the value in Session Global as per the request by server
 		$collection = $this->db->sessionMaster;		
 		   $collection->update(
             array('_id' => $key),
-            array('$set'=>array('token'=>$value)),
+            array('$set'=>array('token'=>$value,'role'=>$role)),
             array('upsert' => true)
         );
 		
@@ -58,6 +58,24 @@ class session {
 			foreach($result as $key1 => $value)
 			{
 				return $value['token'];
+			}
+			}else
+			{
+				return false;
+			}
+		
+	}
+	public function getRole($key){
+		// sets the value in Session Global as per the request by server
+		$collection = $this->db->sessionMaster;		
+
+		$result = $collection->find(array('_id' => $key));
+
+		if($collection->count() > 0){
+			foreach($result as $key1 => $value)
+			{
+
+				return $value['role'];
 			}
 			}else
 			{
@@ -102,7 +120,7 @@ class session {
 		$result = $collection->remove(array('_id' => $key['user']));
 		print_r($result);
 	}
-	public function tokenCheck($request,$checkAdmin) {	
+	public function tokenCheck($request,$checkAdmin,$checkoadmin) {	
 		
 		// Checking token and beare from each request
 		if(!isset($request['HTTP_BEARER']) || !isset($request['HTTP_X_AUTH_TOKEN'])){
@@ -112,6 +130,7 @@ class session {
 	    echo "Access Denied";
 	    die();
 		}else{
+		//check if request is admin specific			
 		if($checkAdmin == true){
 			if($request['HTTP_BEARER'] != 'admin'){
 				header("HTTP/1.1 401 not admin");
@@ -120,6 +139,19 @@ class session {
 			    die();
 			}
 		}	
+		//check if request is organsation admin specific
+		if($checkoadmin == true){
+			$bearer = $request['HTTP_BEARER'] ;
+			$role = self::getRole($bearer);
+			
+			if($role != 'oadmin' && $role != 'admin'){
+				header("HTTP/1.1 401 Not authorized");
+			    header("Content-Type: text/plain");
+			    echo "Access Denied";
+			    die();
+			}
+		
+		}
 
 		$bearer = $request['HTTP_BEARER'];
 		$token = $request['HTTP_X_AUTH_TOKEN'];

@@ -10,6 +10,7 @@ class Model {
 	public function __construct() {		
 		$dbobj = new database();
 		$this->db = $dbobj->get();
-		$this->session = new session($this->db);		
+		$this->session = new session($this->db);	
+		$this->email = new email();	
 	}
 }

@@ -9,7 +9,7 @@ class request {
         $this->db = $dbobj->get();
         $this->session = new session($this->db);        
     }
-    public function checkReq($checkToken = true,$checkAdmin = false)
+    public function checkReq($checkToken = true,$checkAdmin = false,$checkoadmin = false)
     {
             
     
@@ -19,7 +19,7 @@ class request {
         	    header('Access-Control-Allow-Origin: http://smartafarm.com.au'); 
         	    header('Access-Control-Allow-Headers:accept,bearer,x-auth-token');
                 if($checkToken) {
-                       if($this->session->tokenCheck($_SERVER,$checkAdmin)){                                      
+                       if($this->session->tokenCheck($_SERVER,$checkAdmin,$checkoadmin)){                                      
                            return true;
                        }
                      } 	
@@ -59,7 +59,7 @@ class request {
                         header('Access-Control-Allow-Origin: http://smartafarm.com.au');
                         //header('Access-Control-Allow-Origin: *');                        
                         if($checkToken) {
-                           if($this->session->tokenCheck($_SERVER,$checkAdmin)){               
+                           if($this->session->tokenCheck($_SERVER,$checkAdmin,$checkoadmin)){               
                                return true;
                            }
                         } 
@@ -77,6 +77,7 @@ class request {
         
                
         }
+
             
 }
 ?>

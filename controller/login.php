@@ -45,4 +45,12 @@ class login extends controller{
 		$check = $this->model->destroy($data);
 		
 	}
+	public function forgot($action){
+		/*
+		 *destroys the token
+		 */
+		$data = json_decode(file_get_contents('php://input'), true);		
+		$check = $this->model->forgot($action,$data);
+		
+	}
 }

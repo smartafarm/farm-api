@@ -42,7 +42,7 @@ class login_model extends Model {
  		if (!$this->session->getToken($username))
  		{
  			//create session for user 			 			
- 			$this->session->setToken($username,$jwt);					
+ 			$this->session->setToken($username,$jwt,$reading['details']['type']);					
  		}
  		$token = $this->session->getToken($username);
  		
@@ -89,6 +89,50 @@ public function validate($data){
 public function destroy($data){
 	// destroy user session and token
 	$this->session->destroy($data);
+
+}
+public function forgot($action,$data){
+	// finsing id
+	
+	$collection = $this->db->userMaster;
+	$email = '';
+	$_id = '';
+	$uname = '';
+	$response = '';
+	if($action == 'exists'){
+		$result = $collection->find(array('uname' => $data['user']));
+		$response  = $result->count() ;
+		if($result->count() == 0){
+			$result = $collection->find(array('details.email' => $data['user']));	
+			$response = $result->count() ;		
+		}
+	//resetting the password
+	if($result->count() == 1){
+		foreach($result as $key=> $value)
+		{	
+			$_id	= $value['_id'];
+			$uname =  $value['uname'];
+			$email 	= $value['details']['email'];
+		}	
+		$update = $collection->update(
+			    array('_id' => $_id),
+			    array(
+			        '$set' => array("password" => "default123" )
+			        ),
+			    array("upsert" => false)
+			);
+		if($update['n'] == 1){
+			$sendmessage = '<p>Your request to reset password was successful.</p><br>';
+			$sendmessage .= '<p>Your username : <strong>'. $uname .'</strong></p><br>';
+			$sendmessage .= '<p>Your password : <strong>default123</strong></p><br>';
+			//print_r($sendmessage);
+			$this->email->send('vandish.gandhi@uts.edu.au',$sendmessage,'Password Recovery');
+		}
+	}
+	
+	}
+	header('Content-Type: application/json');
+	echo json_encode($response, JSON_PRETTY_PRINT);
 
 }
 }

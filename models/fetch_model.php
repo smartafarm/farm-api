@@ -44,7 +44,8 @@ class fetch_model extends Model{
 			$data["name"]	=  $device["EquipName"];
 			$data["Desc"]	=  $device["Description"];
 			$data["Status"]	=  $device["status"];
-			$data["sensor"]	=  $device["sensor"];			
+			//$data["sensor"]	=  $device["sensor"];			
+			$data["asset"]	=  $device["asset"];
 			foreach($alldAccess as $key=> $value)
 			{
 				if ($key == $device["_id"])
@@ -172,6 +173,70 @@ class fetch_model extends Model{
 		header('Content-Type: application/json');
 		echo json_encode($result,JSON_PRETTY_PRINT);
 	}
+	function getuserinfo($bearer) {
+		/*		 
+		 * Gets all the devices in the dataBase based on the user
+		 * @var - $bearer - user received from fetch controller  		 
+		 */
+		
+		
+		$userCollection = $this->db->userMaster;
+		$dAccessResponse = $userCollection->find(array('uname'=>$bearer));
+		//gets all devices accessible to the user	
+		$dAccessResponse->sort(array('device'=>1));
+		foreach($dAccessResponse as $key=> $value)
+		{
+			
+				$result = $value;
+
+		}	
+		unset($result['_id']);
+		//unset($result['uname']);
+		unset($result['password']);
+		unset($result['genFunc']);
+		header('Content-Type: application/json');
+		echo json_encode( $result , JSON_PRETTY_PRINT);
+	}
+	function readings($data,$did) {
+		/*		 
+		 * Gets all the devices in the dataBase based on the user
+		 * @var - $bearer - user received from fetch controller  		 
+		 */
+		if($data == 'device'){
+			$collection = $this->db->deviceData;
+			$response = $collection->find(array('did'=>$did));			
+			$result = array();
+			foreach($response as $key=> $value)
+			{			
+				unset($value['_id']);
+				unset($value['lat']);
+				unset($value['long']);
+				$value['dt'] = date(DATE_ISO8601, $value['dt']->sec);
+				array_push($result, $value);
+			}	
+			
+		}
+
+		if($data == 'deviceInfo'){
+			$collection = $this->db->DeviceMaster;
+			$response = $collection->find(array('_id'=>$did));			
+			$result = array();			
+			foreach($response as $key=> $value)
+			{			
+				
+				
+				unset($value['EquipTypeID']);								
+				array_push($result, $value);
+			}	
+			
+		}
+		
+		
+		
+		header('Content-Type: application/json');
+		echo json_encode( $result , JSON_PRETTY_PRINT);
+	}
+		
 }	
 //1445297068211 
 //1445297090211
