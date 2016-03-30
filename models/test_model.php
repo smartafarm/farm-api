@@ -47,7 +47,7 @@ class test_model extends Model{
 			$r_string = explode(",", $args["query"]);
 			//print_r($r_string);
 			$device = 	substr($r_string[0], 2);									
-			$collection = $this->db->DeviceMaster;
+			/*$collection = $this->db->DeviceMaster;
 			$query = array("_id" => $device);
 			// checking device
 				if (empty($collection->findOne($query))) {	
@@ -64,7 +64,7 @@ class test_model extends Model{
 							echo json_encode($msg);													
 							exit;
 						}
-					}
+					}*/
 					// device header information data
 					$dt = DateTime::createFromFormat('d-m-YH:i:s', $r_string[1]);
 					//print_r($r_string[1]);
@@ -129,7 +129,7 @@ class test_model extends Model{
 					$collection = $this->db->deviceData_copy;
 					$options = array('fsync'=>\TRUE);
 					$result = $collection->insert($data,$options);
-					http_response_code(201);				
+					http_response_code(200);				
 					$msg = "Created";
 					echo json_encode($msg);	
 				}// end of device checking IF
