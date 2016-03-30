@@ -56,8 +56,8 @@ class test_model extends Model{
 					echo json_encode($msg);
 					exit;
 				}
-				else{
-					for($i=1;$i<=3;$i++){
+				else{*/
+			/*		for($i=1;$i<=3;$i++){
 						if (empty($r_string[$i])) {
 							http_response_code(403);				
 							$msg = $this->param[$i]." NOT FOUND";
@@ -132,7 +132,7 @@ class test_model extends Model{
 					http_response_code(200);				
 					$msg = "Created";
 					echo json_encode($msg);	
-				}// end of device checking IF
+			//	}// end of device checking IF
 			
 	}
 	else
