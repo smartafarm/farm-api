@@ -80,7 +80,8 @@ class fetch_model extends Model{
 				array_push($data["readings"],$reading);
 
 				// converting date into ISO for Client from mongo date object
-				$data["readings"][$index]["dt"] = date(DATE_ISO8601, $data["readings"][$index]["dt"]->sec);
+				//$data["readings"][$index]["dt"] = date(DATE_ISO8601, $data["readings"][$index]["dt"]->sec);
+				$data["readings"][$index]["dt"] = date('m-d-Y H:i:s', $data["readings"][$index]["dt"]->sec);
 				$index++;
 			}
 			array_push($result,$data);	
@@ -211,7 +212,7 @@ class fetch_model extends Model{
 				unset($value['_id']);
 				unset($value['lat']);
 				unset($value['long']);
-				$value['dt'] = date(DATE_ISO8601, $value['dt']->sec);
+				$value['dt'] = date('m-d-Y H:i:s', $value['dt']->sec);
 				array_push($result, $value);
 			}	
 			
