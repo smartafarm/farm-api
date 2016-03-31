@@ -15,25 +15,41 @@ class feed_model extends Model{
 	}
 	
 	public function getStatus(){
+	
 	if ($_SERVER['REQUEST_METHOD'] == "POST"){	
+		$string = file_get_contents('php://input');
 		$args =$_POST;
 		// for raw data testing from device
 		$collection = $this->db->rawMaster;
 		$options = array('fsync'=>\TRUE);
-		$collection->insert(array('msg'=>$args["query"]));
+
+		
 
 		// data insert			
 		if (empty($args["query"])) {												// IF no string received
-			http_response_code(403);	
-			$msg  =		"No Content"; 
-			echo json_encode($msg);
-			exit;
+			$string = file_get_contents('php://input');
+			   if(empty($string)){
+						http_response_code(403);	
+						$msg  =		"No Content"; 
+						echo json_encode($msg);
+						$collection->insert(array('msg'=>$args["query"]));
+						exit;
+					}else
+				{
+					$args["query"] = $string;
+					$collection->insert(array('msg'=>$args["query"]));
+				}
 			}
-		else{	
+
+		
+
 			$r_string = explode(",", $args["query"]);
 			//print_r($r_string);
-			$device = 	substr($r_string[0], 2);									
-			$collection = $this->db->DeviceMaster;
+			$device = 	substr($r_string[0], 2);	
+			// Device check
+			
+
+			/*$collection = $this->db->DeviceMaster;
 			$query = array("_id" => $device);
 			// checking device
 				if (empty($collection->findOne($query))) {	
@@ -42,8 +58,8 @@ class feed_model extends Model{
 					echo json_encode($msg);
 					exit;
 				}
-				else{
-					for($i=1;$i<=3;$i++){
+				else{*/
+			/*		for($i=1;$i<=3;$i++){
 						if (empty($r_string[$i])) {
 							http_response_code(403);				
 							$msg = $this->param[$i]." NOT FOUND";
@@ -51,12 +67,16 @@ class feed_model extends Model{
 							exit;
 						}
 					}
-					// device header information data
-				
+				}*/
+
+			// device header information data
+					$dt = DateTime::createFromFormat('d-m-YH:i:s', $r_string[1]);
+					//print_r($r_string[1]);
+					
 					$data =array(
 					"did"		=> $device,		
 					// convert unix timestamp to iso and then to string for mongo date object					
-					"dt"		=> new MongoDate(strtotime(date("c",$r_string[1]/1000))),
+					"dt"		=> new MongoDate($dt->getTimestamp()),
 					"lat" 		=>$r_string[2],
 					"long" 		=>$r_string[3],					
 					);
@@ -103,29 +123,27 @@ class feed_model extends Model{
 							// pushing in the reading array of the sensor based on $index
 							array_push($data['data'][$index]['sdata'], array(
 								'id'=>$dataid,
-								'value'=>$datavalue,
+								'value'=>(double)$datavalue,
 								'type'=>$type
 								));
-							/*
-							$data['data'][$index]['sdata']['value'] =$datavalue;
-							$data['data'][$index]['sdata']['type'] =$type;*/
+							
 						}			// Breaking string for value
 					}	
 					
 					$collection = $this->db->deviceData;
 					$options = array('fsync'=>\TRUE);
-					$collection->insert($data,$options);
-					http_response_code(201);				
+					$result = $collection->insert($data,$options);
+					http_response_code(200);				
 					$msg = "Created";
 					echo json_encode($msg);	
-				}// end of device checking IF
-			}
+			
+			
 	}
 	else
 	{
 		$msg = "400 BAD REQUEST";
 		echo $msg;	
 	}
-	}// end of get status
+	}// end of get status*/
 }// end of class
 ?>

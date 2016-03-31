@@ -126,7 +126,7 @@ class test_model extends Model{
 						}			// Breaking string for value
 					}	
 					
-					$collection = $this->db->deviceData_copy;
+					$collection = $this->db->deviceData;
 					$options = array('fsync'=>\TRUE);
 					$result = $collection->insert($data,$options);
 					http_response_code(200);				
