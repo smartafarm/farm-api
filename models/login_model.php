@@ -25,7 +25,7 @@ class login_model extends Model {
 		);		
 
 		$result = $collection->count ($authenticate);
-	
+		$setDt = new DateTime();
 		if ($result == 1) {
 		// if credentials are true
 		$readings = $collection->find($authenticate)	;
