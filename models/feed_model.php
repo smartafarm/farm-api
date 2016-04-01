@@ -70,7 +70,7 @@ class feed_model extends Model{
 				}*/
 
 			// device header information data
-					$dt = DateTime::createFromFormat('d-m-YH:i:s', $r_string[1]);
+					$dt = DateTime::createFromFormat('d-m-YH:i:sT', $r_string[1]);
 					//print_r($r_string[1]);
 					
 					$data =array(
