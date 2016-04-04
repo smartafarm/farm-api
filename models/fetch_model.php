@@ -88,9 +88,9 @@ class fetch_model extends Model{
 		
 		}
 		// updates the timestamp for users last reading
-		if(!$this->session->getTimestamp($bearer)){
+		
 			$this->session->setTimestamp($bearer, date('dmYHis'));
-		}
+		
 		header('Content-Type: application/json');
 		echo json_encode( $result , JSON_PRETTY_PRINT);
 	}
@@ -115,7 +115,7 @@ class fetch_model extends Model{
 		$dAccess = array();
 		$userCollection = $this->db->userMaster;
 		// gets all devices accessible to user
-	/*	$dAccessResponse = $userCollection->find(array('uname'=>$bearer), array("device"));	
+		$dAccessResponse = $userCollection->find(array('uname'=>$bearer), array("device"));	
 		foreach($dAccessResponse as $key=> $value)
 		{
 			$alldAccess = $value['device'];
@@ -124,9 +124,10 @@ class fetch_model extends Model{
 		// creating array for all devices and allowed functions
 		foreach($alldAccess as $key=> $value)
 		{
-			array_push($dAccess, $value['_id'][0]);
+			
+			array_push($dAccess, $key);
 		}	
-		*/
+		
 		// last timestamp of user accessed the reading
 		//$lastReadings = $this->session->getTimestamp($bearer);
 		$lastReadings=DateTime::createFromFormat('dmYHis', $this->session->getTimestamp($bearer));
@@ -134,14 +135,19 @@ class fetch_model extends Model{
 		
 		
 		// current request time stamp
-		$toTime = DateTime::createFromFormat('dmYHis', $timestamp);
+		$toTime = DateTime::createFromFormat('dmYHis',$timestamp);
+		//$toTime = new DateTime($timestamp);
 		
 		$time =  new MongoDate($toTime->getTimestamp());
-	/*	print_r($lastReadings);
-		print_r($lastReadings);
+		/*print_r($lastReadings);
+		print_r($toTime);
 		print_r($fromTime);
 		print_r($time);
-		print_r($device);*/
+		print_r($timestamp);
+		print_r($device);
+		print_r($dAccess);*/
+		
+
 		$collection = $this->db->deviceData;			
 		// getting readings of each device from last time stamp of user
 		// and user request time stamp
@@ -152,11 +158,11 @@ class fetch_model extends Model{
 			'$lte'=>$time
 			) ,
 		// only for the accessible devices
-		'did'=>$device
+		'did'=>array('$in'=>$dAccess)
 		);	
 		$hit = false;
 		$readings = $collection->find($condition);
-		print_r($readings->count());
+		//print_r($readings->count());
 		$result = Array();
 		$result["readings"] = array();	
 		$index = 0;		
@@ -164,13 +170,16 @@ class fetch_model extends Model{
 		{
 			$hit = true;
 			array_push($result["readings"], $value);
-			// replacing ISO date from mongo date for front end
+			// replacing graph from mongo date for front end
 			$result["readings"][$index]["dt"] = date('d-m-Y H:i:s', $result["readings"][$index]["dt"]->sec);
 			$index++;			
 		}
 		// updating last reading timestamp for user				
-		/*if($hit)
-		{$this->session->setTimestamp($bearer, $timestamp);}*/
+		if($hit)
+		{
+			
+			$this->session->setTimestamp($bearer,$timestamp);
+		}
 		header('Content-Type: application/json');
 		echo json_encode($result,JSON_PRETTY_PRINT);
 	}
@@ -186,7 +195,8 @@ class fetch_model extends Model{
 		
 		
 		$collection = $this->db->rawMaster;
-		$response = $collection->find();	
+		$response = $collection->find()->sort(array('$natural' => -1) );	
+		
 		$result =[];
 		foreach ($response as $key => $value) {
 			array_push($result, $value['msg']);
@@ -260,5 +270,3 @@ class fetch_model extends Model{
 	}
 		
 }	
-//1445297068211 
-//1445297090211
