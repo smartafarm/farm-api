@@ -25,7 +25,7 @@ class fetch extends controller{
 		// responds JSON data of reading to ajax poll.
 		$reqBearer = $this->bearer;	
 		
-		$this->model->getUpdate($_GET['t'],$reqBearer);
+		$this->model->getUpdate($reqBearer);
 		
 	}
 	public function getrawdata(){
