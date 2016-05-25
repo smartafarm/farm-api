@@ -81,18 +81,18 @@ class fetch_model extends Model{
 
 				// converting date into ISO for Client from mongo date object
 				//$data["readings"][$index]["dt"] = date(DATE_ISO8601, $data["readings"][$index]["dt"]->sec);
-				$data["readings"][$index]["dt"] = date('m-d-Y H:i:s', $data["readings"][$index]["dt"]->sec);
+				$data["readings"][$index]["dt"] = date('m/d/Y H:i:s', $data["readings"][$index]["dt"]->sec);
 				$index++;
 			}
 			array_push($result,$data);	
 		
 		}
 		// updates the timestamp for users last reading
-		
-			$this->session->setTimestamp($bearer, date('dmYHis'));
+			$timestamp = date('dmYHis',$_SERVER['REQUEST_TIME']);
+			$this->session->setTimestamp($bearer, $timestamp);
 		
 		header('Content-Type: application/json');
-		echo json_encode( $result , JSON_PRETTY_PRINT);
+		echo json_encode( $result );
 	}
 	
 	function getUpdate($bearer) {
@@ -171,13 +171,14 @@ class fetch_model extends Model{
 			$hit = true;
 			array_push($result["readings"], $value);
 			// replacing graph from mongo date for front end
-			$result["readings"][$index]["dt"] = date('d-m-Y H:i:s', $result["readings"][$index]["dt"]->sec);
+			$result["readings"][$index]["dt"] = date('m/d/Y H:i:s', $result["readings"][$index]["dt"]->sec);
 			$index++;			
 		}
-		// updating last reading timestamp for user				
+		// updating last reading timestamp for user	
+
 		if($hit)
 		{
-			
+			$timestamp = date('dmYHis',$_SERVER['REQUEST_TIME']);	
 			$this->session->setTimestamp($bearer,$timestamp);
 		}
 		header('Content-Type: application/json');

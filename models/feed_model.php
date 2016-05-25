@@ -132,11 +132,12 @@ class feed_model extends Model{
 					
 					$collection = $this->db->deviceData;
 					$options = array('fsync'=>\TRUE);
-					$result = $collection->insert($data,$options);
+					//$result = $collection->insert($data,$options);
 					http_response_code(200);				
 					$msg = "Created";
-					echo json_encode($msg);	
-			
+					//echo json_encode($msg);	
+					//calling to check if alert required
+					$this->alerts($device,$dt);
 			
 	}
 	else
@@ -145,5 +146,46 @@ class feed_model extends Model{
 		echo $msg;	
 	}
 	}// end of get status*/
+
+	 function alerts($device,$dt){
+	 	$collection 		=	$this->db->alerts;
+	 	$alerts 			= 	$collection->find(array('did' => $device));
+	 	$readingCollection 	=	$this->db->deviceData; 
+	 	$subscribedUsers 	= 	array();
+	 	foreach($alerts as $key=> $value)
+			{
+				// Creating subcribed user list for device alerts
+				if(!in_array($value['uname'], $subscribedUsers)){
+					array_push($subscribedUsers, $value['uname']);
+				}
+			
+			$duration = clone $dt;
+			//subtracting time as per alerts
+			$tosub = new DateInterval('PT'.$value['duration']['mins'].'M');
+			$duration->sub($tosub);			
+			
+			//timestamps for mongo query
+			$fromTime = new MongoDate($duration->getTimestamp());
+			$toTime =  new MongoDate($dt->getTimestamp());
+			
+			$condition = array(
+				
+				'dt' 	=> 	array(	
+				'$gte'	=>	$fromTime,
+				'$lte'	=>	$toTime
+				),
+				'did'	=>	$device
+			 );	
+			
+			$readings = $readingCollection->find($condition)->sort(array('$natural' => -1))->limit(5);;
+
+			foreach($readings as $readId=> $readValue){
+				$readValue['dt'] = date('m/d/Y H:i:s', $readValue["dt"]->sec);
+				print_r($readValue);
+			}
+			
+			}//Alerts for Each
+			
+	 }
 }// end of class
 ?>
